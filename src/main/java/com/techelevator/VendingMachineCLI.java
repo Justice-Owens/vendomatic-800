@@ -8,8 +8,14 @@ import java.io.FileNotFoundException;
 import java.text.DecimalFormat;
 import java.util.*;
 
+//TODO FINISH PURCHASE MENU PROCESSES
+//TODO OVERRIDE METHODS IN ITEM CHILD CLASSES
+//TODO ADD LOGGING FUNCTIONALITY
+//TODO OPTIONAL SALES REPORT FUNCTION
+
 public class VendingMachineCLI {
 
+	//CONSTANTS
 	private static final String MAIN_MENU_OPTION_DISPLAY_ITEMS = "Display Vending Machine Items";
 	private static final String MAIN_MENU_OPTION_PURCHASE = "Purchase";
 	private static final String MAIN_MENU_OPTION_EXIT = "Exit";
@@ -23,6 +29,7 @@ public class VendingMachineCLI {
 	private static final String FEED_MONEY_MENU_OPTION_TEN = "$10";
 	private static final String[] FEED_MONEY_MENU_OPTIONS = {FEED_MONEY_MENU_OPTION_ONE, FEED_MONEY_MENU_OPTION_FIVE, FEED_MONEY_MENU_OPTION_TEN};
 
+	//VARIABLES
 	private Menu menu;
 	private List<Item> inventory = new ArrayList<>();
 	private double balance;
@@ -68,7 +75,7 @@ public class VendingMachineCLI {
 		}
 	}
 
-	// SCANS CSV INVENTORY AND GENERATES NEW INVENTORY ON RUN
+	//SCANS CSV INVENTORY FILE AND GENERATES NEW INVENTORY ON RUN
 	public void setup(){
 		try(Scanner source = new Scanner(new File("vendingmachine.csv"))) {
 			while (source.hasNextLine()) {
@@ -123,9 +130,13 @@ public class VendingMachineCLI {
 		}
 	}
 
+	//SUBTRACTS THE VALUE OF THE ITEM FROM THE BALANCE FED INTO THE MACHINE AND CALLS THE ITEMS DISPENSE() METHOD WHICH WILL PRINT
+	//TO THE CONSOLE AN ITEM SPECIFIC PHRASE.
 	public void purchase(String selection){
 		for(Item item: inventory){
 			if(item.getSelection().equals(selection)){
+				balance -= item.getPrice();
+				revenue =+ item.getPrice();
 				item.dispense();
 			}
 		}
