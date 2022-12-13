@@ -9,7 +9,6 @@ import java.text.DecimalFormat;
 import java.util.*;
 
 //TODO FINISH PURCHASE MENU PROCESSES
-//TODO OVERRIDE METHODS IN ITEM CHILD CLASSES
 //TODO ADD LOGGING FUNCTIONALITY
 //TODO OPTIONAL SALES REPORT FUNCTION
 
@@ -50,9 +49,9 @@ public class VendingMachineCLI {
 		while (true) {
 			String choice = (String) menu.getChoiceFromOptions(MAIN_MENU_OPTIONS);
 
-			if (choice.equals(MAIN_MENU_OPTION_DISPLAY_ITEMS)) {
+			if (choice.equalsIgnoreCase(MAIN_MENU_OPTION_DISPLAY_ITEMS)) {
 				displayInventory();
-			} else if (choice.equals(MAIN_MENU_OPTION_PURCHASE)) {
+			} else if (choice.equalsIgnoreCase(MAIN_MENU_OPTION_PURCHASE)) {
 					System.out.print(System.lineSeparator() + "Current Money Provided: $" + decimalFormat.format(balance));
 				choice = (String) menu.getChoiceFromOptions(PURCHASE_MENU_OPTIONS);
 
@@ -69,7 +68,7 @@ public class VendingMachineCLI {
 					case PURCHASE_MENU_OPTION_FINISH:
 						break;
 				}
-			} else if (choice.equals(MAIN_MENU_OPTION_EXIT)){
+			} else if (choice.equalsIgnoreCase(MAIN_MENU_OPTION_EXIT)){
 				break;
 			}
 		}
@@ -134,11 +133,18 @@ public class VendingMachineCLI {
 	//TO THE CONSOLE AN ITEM SPECIFIC PHRASE.
 	public void purchase(String selection){
 		for(Item item: inventory){
-			if(item.getSelection().equals(selection)){
-				balance -= item.getPrice();
-				revenue =+ item.getPrice();
-				item.dispense();
-			}
+			if(item.getSelection().equalsIgnoreCase(selection)){ // made ignore case AT
+				if(item.getPrice() <= balance) { // if/else for balance AT
+					balance -= item.getPrice();
+					revenue += item.getPrice();
+					System.out.println(item.dispense(balance));
+				} else {
+					System.out.println("Insufficient Balance");
+				}
+			} /*  else {
+				System.out.println("*** Invalid Selection ***");
+				break;   // will come back to this AT
+			} */
 		}
 	}
 

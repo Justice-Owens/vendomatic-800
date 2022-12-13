@@ -9,7 +9,7 @@ public class Item {
     private String name, selection;
     private double price;
     private int quantity;
-    DecimalFormat decimalFormat = new DecimalFormat("0.00");
+    protected DecimalFormat decimalFormat = new DecimalFormat("0.00");
 
     //CONSTRUCTOR
     public Item(String selection, String name, double price) {
@@ -56,7 +56,7 @@ public class Item {
 
 
     //METHODS FOR ITEM FUNCTIONALITY
-    public String dispense(){
+    public String dispense(double balance){ // added parameter to allow for display of balance AT
         return "";
     }
 

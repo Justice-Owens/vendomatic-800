@@ -9,5 +9,8 @@
         <module name="m1-java-capstone-vending-machine" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="module-1-capstone" target="11" />
+    </bytecodeTargetLevel>
   </component>
 </project>
