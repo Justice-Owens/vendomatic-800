@@ -8,7 +8,6 @@ import java.io.FileNotFoundException;
 import java.text.DecimalFormat;
 import java.util.*;
 
-//TODO FINISH PURCHASE MENU PROCESSES
 //TODO ADD LOGGING FUNCTIONALITY
 //TODO OPTIONAL SALES REPORT FUNCTION
 
@@ -22,11 +21,11 @@ public class VendingMachineCLI {
 	private static final String PURCHASE_MENU_OPTION_FEED_MONEY = "Feed Money";
 	private static final String PURCHASE_MENU_OPTION_SELECT_PRODUCT = "Select Product";
 	private static final String PURCHASE_MENU_OPTION_FINISH = "Finish Transaction";
-	private static final String[] PURCHASE_MENU_OPTIONS = {PURCHASE_MENU_OPTION_FEED_MONEY,PURCHASE_MENU_OPTION_SELECT_PRODUCT, PURCHASE_MENU_OPTION_FINISH};
+	private static final String[] PURCHASE_MENU_OPTIONS = { PURCHASE_MENU_OPTION_FEED_MONEY,PURCHASE_MENU_OPTION_SELECT_PRODUCT, PURCHASE_MENU_OPTION_FINISH };
 	private static final String FEED_MONEY_MENU_OPTION_ONE = "$1";
 	private static final String FEED_MONEY_MENU_OPTION_FIVE = "$5";
 	private static final String FEED_MONEY_MENU_OPTION_TEN = "$10";
-	private static final String[] FEED_MONEY_MENU_OPTIONS = {FEED_MONEY_MENU_OPTION_ONE, FEED_MONEY_MENU_OPTION_FIVE, FEED_MONEY_MENU_OPTION_TEN};
+	private static final String[] FEED_MONEY_MENU_OPTIONS = { FEED_MONEY_MENU_OPTION_ONE, FEED_MONEY_MENU_OPTION_FIVE, FEED_MONEY_MENU_OPTION_TEN };
 
 	//VARIABLES
 	private Menu menu;
@@ -50,23 +49,34 @@ public class VendingMachineCLI {
 			String choice = (String) menu.getChoiceFromOptions(MAIN_MENU_OPTIONS);
 
 			if (choice.equalsIgnoreCase(MAIN_MENU_OPTION_DISPLAY_ITEMS)) {
-				displayInventory();
-			} else if (choice.equalsIgnoreCase(MAIN_MENU_OPTION_PURCHASE)) {
-					System.out.print(System.lineSeparator() + "Current Money Provided: $" + decimalFormat.format(balance));
-				choice = (String) menu.getChoiceFromOptions(PURCHASE_MENU_OPTIONS);
 
-				switch(choice){
-					case PURCHASE_MENU_OPTION_FEED_MONEY:
-						choice = (String) menu.getChoiceFromOptions(FEED_MONEY_MENU_OPTIONS);
-						feedMoney(choice);
+				displayInventory();
+
+			} else if (choice.equalsIgnoreCase(MAIN_MENU_OPTION_PURCHASE)) {
+
+				while(true) {
+					System.out.print(System.lineSeparator() + "Current Money Provided: $" + decimalFormat.format(balance));
+					choice = (String) menu.getChoiceFromOptions(PURCHASE_MENU_OPTIONS);
+
+					switch (choice) {
+						case PURCHASE_MENU_OPTION_FEED_MONEY:
+							choice = (String) menu.getChoiceFromOptions(FEED_MONEY_MENU_OPTIONS);
+							feedMoney(choice);
+							break;
+						case PURCHASE_MENU_OPTION_SELECT_PRODUCT:
+							displayInventory();
+							System.out.print(System.lineSeparator() + "Please enter a selection >>> ");
+							String selection = userIn.nextLine();
+							purchase(selection);
+							choice = MAIN_MENU_OPTION_PURCHASE;
+							break;
+						case PURCHASE_MENU_OPTION_FINISH:
+							finishTransaction();
+							break;
+					}
+					if(choice == PURCHASE_MENU_OPTION_FINISH){
 						break;
-					case PURCHASE_MENU_OPTION_SELECT_PRODUCT:
-						displayInventory();
-						String selection = userIn.nextLine();
-						purchase(selection);
-						break;
-					case PURCHASE_MENU_OPTION_FINISH:
-						break;
+					}
 				}
 			} else if (choice.equalsIgnoreCase(MAIN_MENU_OPTION_EXIT)){
 				break;
@@ -132,8 +142,10 @@ public class VendingMachineCLI {
 	//SUBTRACTS THE VALUE OF THE ITEM FROM THE BALANCE FED INTO THE MACHINE AND CALLS THE ITEMS DISPENSE() METHOD WHICH WILL PRINT
 	//TO THE CONSOLE AN ITEM SPECIFIC PHRASE.
 	public void purchase(String selection){
+		boolean isValid = false;
 		for(Item item: inventory){
 			if(item.getSelection().equalsIgnoreCase(selection)){ // made ignore case AT
+				isValid = true;
 				if(item.getPrice() <= balance) { // if/else for balance AT
 					balance -= item.getPrice();
 					revenue += item.getPrice();
@@ -141,11 +153,45 @@ public class VendingMachineCLI {
 				} else {
 					System.out.println("Insufficient Balance");
 				}
-			} /*  else {
-				System.out.println("*** Invalid Selection ***");
-				break;   // will come back to this AT
-			} */
+			}
 		}
+		if(!isValid) {
+			System.out.println("*** Invalid Selection ***");
+		}
+	}
+
+	public void finishTransaction(){
+		int quarters = 0;
+		int dimes = 0;
+		int nickels = 0;
+
+		double i = 0.25;
+
+		while (i > 0){
+			for(int j = 0; balance > i ; j++){
+				balance -= i;
+				if(i == 0.25){
+					quarters++;
+				} else if (i == 0.1){
+					dimes++;
+				} else {
+					nickels++;
+				}
+			}
+			if(i == 0.25){
+				i = 0.1;
+			} else if(i == 0.1){
+				i =0.5;
+			} else {
+				i = 0;
+			}
+		}
+		System.out.println("Here is your change >>>");
+		System.out.println(quarters + " quarters");
+		System.out.println(dimes + " dimes");
+		System.out.println(nickels + " nickels");
+
+		balance = 0;
 	}
 
 
