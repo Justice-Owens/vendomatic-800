@@ -67,11 +67,11 @@ public class VendingMachineCLI {
 							displayInventory();
 							System.out.print(System.lineSeparator() + "Please enter a selection >>> ");
 							String selection = userIn.nextLine();
-							purchase(selection);
+							System.out.println(purchase(selection));
 							choice = MAIN_MENU_OPTION_PURCHASE;
 							break;
 						case PURCHASE_MENU_OPTION_FINISH:
-							finishTransaction();
+							System.out.println(finishTransaction());
 							break;
 					}
 
@@ -146,7 +146,7 @@ public class VendingMachineCLI {
 
 	//SUBTRACTS THE VALUE OF THE ITEM FROM THE BALANCE FED INTO THE MACHINE AND CALLS THE ITEMS DISPENSE() METHOD WHICH WILL PRINT
 	//TO THE CONSOLE AN ITEM SPECIFIC PHRASE.
-	public void purchase(String selection){
+	public String purchase(String selection){
 		boolean isValid = false;
 
 		for(Item item: inventory){
@@ -157,23 +157,20 @@ public class VendingMachineCLI {
 					balance -= item.getPrice();
 					revenue += item.getPrice();
 					item.setQuantity(item.getQuantity()-1);						//Added to make sure that the items are removed from the inventory JO
-					System.out.println(item.dispense(balance));
+					return (item.dispense(balance));
 
 				} else if ((item.getPrice() > balance) && (item.getQuantity() > 0)) {
-					System.out.println("Insufficient Balance");
+					return ("Insufficient Balance");
 
 				} else {													// this if-else makes sure the system will print out that item is sold out JO
-					System.out.println("That item is sold out. Please make another selection.");
+					return ("That item is sold out. Please make another selection.");
 				}
 			}
 		}
-
-		if(!isValid) {
-			System.out.println("*** Invalid Selection ***");
-		}
+			return ("*** Invalid Selection ***");
 	}
 
-	public void finishTransaction(){
+	public String finishTransaction(){
 		int quarters = 0;
 		int dimes = 0;
 		int nickels = 0;
@@ -181,7 +178,7 @@ public class VendingMachineCLI {
 		double i = 0.25;
 
 		while (i > 0){
-			for(int j = 0; balance > i ; j++){
+			for(int j = 0; balance >= i ; j++){
 				balance -= i;
 				if(i == 0.25){
 					quarters++;
@@ -195,20 +192,32 @@ public class VendingMachineCLI {
 			if(i == 0.25){
 				i = 0.1;
 			} else if(i == 0.1){
-				i =0.5;
+				i = 0.05;
 			} else {
 				i = 0;
 			}
 		}
 
-		System.out.println("Here is your change >>>");
-		System.out.println(quarters + " quarters");
-		System.out.println(dimes + " dimes");
-		System.out.println(nickels + " nickels");
-
 		balance = 0;
+
+		return ("Here is your change >>>\n" + quarters + " quarters\n" + dimes + " dimes\n" + nickels + " nickels");
 	}
 
+	public double getBalance() {
+		return balance;
+	}
+
+	public void setBalance(double balance) {
+		this.balance = balance;
+	}
+
+	public double getRevenue() {
+		return revenue;
+	}
+
+	public void setRevenue(double revenue) {
+		this.revenue = revenue;
+	}
 
 	public static void main(String[] args) {
 		Menu menu = new Menu(System.in, System.out);

@@ -60,9 +60,8 @@ public class Item {
         return "";
     }
 
-    public String purchase(){
-        return "";
-    }
+    public void purchase(){}
+
     public String display(){
         if(quantity > 0) {
             return selection + "  |  " + name + "  |  $" + decimalFormat.format(price) + "  |  " + quantity;
