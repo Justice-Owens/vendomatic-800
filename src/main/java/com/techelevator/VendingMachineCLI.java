@@ -74,6 +74,7 @@ public class VendingMachineCLI {
 							finishTransaction();
 							break;
 					}
+
 					if(choice == PURCHASE_MENU_OPTION_FINISH){
 						break;
 					}
@@ -92,7 +93,6 @@ public class VendingMachineCLI {
 				String[] item = line.split("\\|");
 				String itemType = item[3];
 
-
 				switch (itemType) {
 					case "Chip":
 						inventory.add(new Chips(item[0], item[1], Double.parseDouble(item[2])));
@@ -106,12 +106,15 @@ public class VendingMachineCLI {
 					case "Gum":
 						inventory.add(new Gum(item[0], item[1], Double.parseDouble(item[2])));
 						break;
+
 				}
 			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
+
 		menuSelectionOptions = new String[inventory.size()];
+
 		for(int i = 0; i < menuSelectionOptions.length; i++){
 			menuSelectionOptions[i] = inventory.get(i).display();
 		}
@@ -129,6 +132,7 @@ public class VendingMachineCLI {
 			case FEED_MONEY_MENU_OPTION_TEN:
 				balance +=10;
 				break;
+
 		}
 	}
 
@@ -136,6 +140,7 @@ public class VendingMachineCLI {
 	public void displayInventory(){
 		for(Item item: inventory){
 			System.out.println(item.display());
+
 		}
 	}
 
@@ -143,18 +148,26 @@ public class VendingMachineCLI {
 	//TO THE CONSOLE AN ITEM SPECIFIC PHRASE.
 	public void purchase(String selection){
 		boolean isValid = false;
+
 		for(Item item: inventory){
 			if(item.getSelection().equalsIgnoreCase(selection)){ // made ignore case AT
 				isValid = true;
-				if(item.getPrice() <= balance) { // if/else for balance AT
+
+				if((item.getPrice() <= balance) && (item.getQuantity() > 0)) { // if/else for balance AT	//Adjusted if-else statements to ensure item only dispenses if there are items to dispense JO
 					balance -= item.getPrice();
 					revenue += item.getPrice();
+					item.setQuantity(item.getQuantity()-1);						//Added to make sure that the items are removed from the inventory JO
 					System.out.println(item.dispense(balance));
-				} else {
+
+				} else if ((item.getPrice() > balance) && (item.getQuantity() > 0)) {
 					System.out.println("Insufficient Balance");
+
+				} else {													// this if-else makes sure the system will print out that item is sold out JO
+					System.out.println("That item is sold out. Please make another selection.");
 				}
 			}
 		}
+
 		if(!isValid) {
 			System.out.println("*** Invalid Selection ***");
 		}
@@ -178,6 +191,7 @@ public class VendingMachineCLI {
 					nickels++;
 				}
 			}
+
 			if(i == 0.25){
 				i = 0.1;
 			} else if(i == 0.1){
@@ -186,6 +200,7 @@ public class VendingMachineCLI {
 				i = 0;
 			}
 		}
+
 		System.out.println("Here is your change >>>");
 		System.out.println(quarters + " quarters");
 		System.out.println(dimes + " dimes");
