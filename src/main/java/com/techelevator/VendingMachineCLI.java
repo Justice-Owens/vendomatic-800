@@ -5,7 +5,11 @@ import com.techelevator.view.Menu;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 //TODO ADD LOGGING FUNCTIONALITY
@@ -36,6 +40,8 @@ public class VendingMachineCLI {
 	private DecimalFormat decimalFormat = new DecimalFormat("0.00");
 	private Scanner userIn = new Scanner(System.in);
 
+
+
 	public VendingMachineCLI(Menu menu) {
 		this.menu = menu;
 		this.balance = 0;
@@ -62,6 +68,7 @@ public class VendingMachineCLI {
 						case PURCHASE_MENU_OPTION_FEED_MONEY:
 							choice = (String) menu.getChoiceFromOptions(FEED_MONEY_MENU_OPTIONS);
 							feedMoney(choice);
+
 							break;
 						case PURCHASE_MENU_OPTION_SELECT_PRODUCT:
 							displayInventory();
@@ -69,6 +76,7 @@ public class VendingMachineCLI {
 							String selection = userIn.nextLine();
 							System.out.println(purchase(selection));
 							choice = MAIN_MENU_OPTION_PURCHASE;
+
 							break;
 						case PURCHASE_MENU_OPTION_FINISH:
 							System.out.println(finishTransaction());
@@ -122,18 +130,29 @@ public class VendingMachineCLI {
 
 	//ADDS MONEY TO VENDING MACHINE BALANCE
 	public void feedMoney(String choice){
+		double amount=0;
 		switch(choice){
+
 			case FEED_MONEY_MENU_OPTION_ONE:
 				balance +=1;
+				amount =1;
 				break;
 			case FEED_MONEY_MENU_OPTION_FIVE:
 				balance +=5;
+				amount=5;
 				break;
 			case FEED_MONEY_MENU_OPTION_TEN:
 				balance +=10;
+				amount=10;
 				break;
 
 		}
+
+
+
+		logTransaction("FEED MONEY",amount,balance);
+
+
 	}
 
 	//DISPLAYS INVENTORY IN CONSOLE
@@ -144,7 +163,7 @@ public class VendingMachineCLI {
 		}
 	}
 
-	//SUBTRACTS THE VALUE OF THE ITEM FROM THE BALANCE FED INTO THE MACHINE AND CALLS THE ITEMS DISPENSE() METHOD WHICH WILL PRINT
+	//SUBTRACTS THE VALUE OF THE ITEM FROM THE BALANCE FED INTO THE MACHINE AND CALLS THE ITEMS DISPENSE() zMETHOD WHICH WILL PRINT
 	//TO THE CONSOLE AN ITEM SPECIFIC PHRASE.
 	public String purchase(String selection){
 		boolean isValid = false;
@@ -156,8 +175,13 @@ public class VendingMachineCLI {
 				if((item.getPrice() <= balance) && (item.getQuantity() > 0)) { // if/else for balance AT	//Adjusted if-else statements to ensure item only dispenses if there are items to dispense JO
 					balance -= item.getPrice();
 					revenue += item.getPrice();
-					item.setQuantity(item.getQuantity()-1);						//Added to make sure that the items are removed from the inventory JO
+					item.setQuantity(item.getQuantity()-1);
+					//Added to make sure that the items are removed from the inventory JO
+					logTransaction(item.getName()+ " "+item.getSelection(),item.getPrice(),balance);
+
+
 					return (item.dispense(balance));
+
 
 				} else if ((item.getPrice() > balance) && (item.getQuantity() > 0)) {
 					return ("Insufficient Balance");
@@ -176,6 +200,7 @@ public class VendingMachineCLI {
 		int nickels = 0;
 
 		double i = 0.25;
+		logTransaction("GIVE CHANGE",balance,0);
 
 		while (i > 0){
 			for(int j = 0; balance >= i ; j++){
@@ -199,6 +224,7 @@ public class VendingMachineCLI {
 		}
 
 		balance = 0;
+
 
 		return ("Here is your change >>>\n" + quarters + " quarters\n" + dimes + " dimes\n" + nickels + " nickels");
 	}
@@ -224,4 +250,17 @@ public class VendingMachineCLI {
 		VendingMachineCLI cli = new VendingMachineCLI(menu);
 		cli.run();
 	}
+
+	private void logTransaction(String transactionMessage,double amount,double newBalance) {
+		DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss a");
+		Calendar cal = Calendar.getInstance();
+		String formattedDate = dateFormat.format(cal.getTime());
+
+		try (PrintWriter logWriter = new PrintWriter(new FileOutputStream("Log.txt", true))) {
+			logWriter.println(formattedDate + " " + transactionMessage + " $" +decimalFormat.format(amount) + " $" + decimalFormat.format(newBalance));
+		} catch (FileNotFoundException e) {
+			System.out.println("Error: Log file not found");
+		}
+	}
+
 }
