@@ -1,6 +1,7 @@
 package com.techelevator;
 
 import com.techelevator.items.*;
+import com.techelevator.log.VMLogger;
 import com.techelevator.view.Menu;
 
 import java.io.File;
@@ -39,6 +40,7 @@ public class VendingMachineCLI {
 	private String[] menuSelectionOptions;
 	private DecimalFormat decimalFormat = new DecimalFormat("0.00");
 	private Scanner userIn = new Scanner(System.in);
+	private VMLogger vmLogger = new VMLogger();
 
 
 
@@ -148,11 +150,7 @@ public class VendingMachineCLI {
 
 		}
 
-
-
-		logTransaction("FEED MONEY",amount,balance);
-
-
+		vmLogger.logTransaction("FEED MONEY",amount,balance);
 	}
 
 	//DISPLAYS INVENTORY IN CONSOLE
@@ -166,18 +164,15 @@ public class VendingMachineCLI {
 	//SUBTRACTS THE VALUE OF THE ITEM FROM THE BALANCE FED INTO THE MACHINE AND CALLS THE ITEMS DISPENSE() zMETHOD WHICH WILL PRINT
 	//TO THE CONSOLE AN ITEM SPECIFIC PHRASE.
 	public String purchase(String selection){
-		boolean isValid = false;
 
 		for(Item item: inventory){
 			if(item.getSelection().equalsIgnoreCase(selection)){ // made ignore case AT
-				isValid = true;
 
 				if((item.getPrice() <= balance) && (item.getQuantity() > 0)) { // if/else for balance AT	//Adjusted if-else statements to ensure item only dispenses if there are items to dispense JO
 					balance -= item.getPrice();
 					revenue += item.getPrice();
-					item.setQuantity(item.getQuantity()-1);
-					//Added to make sure that the items are removed from the inventory JO
-					logTransaction(item.getName()+ " "+item.getSelection(),item.getPrice(),balance);
+					item.setQuantity(item.getQuantity()-1);  					//Added to make sure that the items are removed from the inventory JO
+					vmLogger.logTransaction(item.getName()+ " "+item.getSelection(),item.getPrice(),balance);
 
 
 					return (item.dispense(balance));
@@ -200,7 +195,6 @@ public class VendingMachineCLI {
 		int nickels = 0;
 
 		double i = 0.25;
-		logTransaction("GIVE CHANGE",balance,0);
 
 		while (i > 0){
 			for(int j = 0; balance >= i ; j++){
@@ -225,6 +219,7 @@ public class VendingMachineCLI {
 
 		balance = 0;
 
+		vmLogger.logTransaction("GIVE CHANGE",balance,0);
 
 		return ("Here is your change >>>\n" + quarters + " quarters\n" + dimes + " dimes\n" + nickels + " nickels");
 	}
@@ -245,22 +240,13 @@ public class VendingMachineCLI {
 		this.revenue = revenue;
 	}
 
+
+
 	public static void main(String[] args) {
 		Menu menu = new Menu(System.in, System.out);
 		VendingMachineCLI cli = new VendingMachineCLI(menu);
 		cli.run();
 	}
 
-	private void logTransaction(String transactionMessage,double amount,double newBalance) {
-		DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss a");
-		Calendar cal = Calendar.getInstance();
-		String formattedDate = dateFormat.format(cal.getTime());
-
-		try (PrintWriter logWriter = new PrintWriter(new FileOutputStream("Log.txt", true))) {
-			logWriter.println(formattedDate + " " + transactionMessage + " $" +decimalFormat.format(amount) + " $" + decimalFormat.format(newBalance));
-		} catch (FileNotFoundException e) {
-			System.out.println("Error: Log file not found");
-		}
-	}
 
 }

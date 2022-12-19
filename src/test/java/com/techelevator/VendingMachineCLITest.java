@@ -30,7 +30,7 @@ public class VendingMachineCLITest {
         test.purchase("A2");
         test.purchase("A2");
 
-        assertEquals("Input: A2.quantity == 0 -> purchase(\"A2\"", "That item is sold out. Please make another selection.", test.purchase("A2"));
+        assertEquals("Input: A2.quantity == 0 -> purchase(\"A2\")", "That item is sold out. Please make another selection.", test.purchase("A2"));
     }
 
     @Test
