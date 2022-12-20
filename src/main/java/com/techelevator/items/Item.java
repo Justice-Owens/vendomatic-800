@@ -6,6 +6,7 @@ import java.text.Format;
 public class Item {
 
     //VARIABLES AND OBJECTS
+    private static final int MAX_QUANTITY = 5;
     private String name, selection;
     private double price;
     private int quantity;
@@ -16,7 +17,7 @@ public class Item {
         this.selection = selection;
         this.name = name;
         this.price = price;
-        this.quantity = 5;
+        this.quantity = MAX_QUANTITY;
 
     }
 
@@ -66,7 +67,7 @@ public class Item {
         if(quantity > 0) {
             return selection + "  |  " + name + "  |  $" + decimalFormat.format(price) + "  |  " + quantity;
         } else {
-            return "SOLD OUT";
+            return selection + "  |  SOLD OUT";
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.techelevator;
 
 import com.techelevator.items.*;
+import com.techelevator.log.SalesReport;
 import com.techelevator.log.VMLogger;
 import com.techelevator.view.Menu;
 
@@ -22,7 +23,8 @@ public class VendingMachineCLI {
 	private static final String MAIN_MENU_OPTION_DISPLAY_ITEMS = "Display Vending Machine Items";
 	private static final String MAIN_MENU_OPTION_PURCHASE = "Purchase";
 	private static final String MAIN_MENU_OPTION_EXIT = "Exit";
-	private static final String[] MAIN_MENU_OPTIONS = { MAIN_MENU_OPTION_DISPLAY_ITEMS, MAIN_MENU_OPTION_PURCHASE, MAIN_MENU_OPTION_EXIT };
+	private static final String MAIN_MENU_OPTION_SALES_REPORT = "";
+	private static final String[] MAIN_MENU_OPTIONS = { MAIN_MENU_OPTION_DISPLAY_ITEMS, MAIN_MENU_OPTION_PURCHASE, MAIN_MENU_OPTION_EXIT, MAIN_MENU_OPTION_SALES_REPORT };
 	private static final String PURCHASE_MENU_OPTION_FEED_MONEY = "Feed Money";
 	private static final String PURCHASE_MENU_OPTION_SELECT_PRODUCT = "Select Product";
 	private static final String PURCHASE_MENU_OPTION_FINISH = "Finish Transaction";
@@ -37,10 +39,10 @@ public class VendingMachineCLI {
 	private List<Item> inventory = new ArrayList<>();
 	private double balance;
 	private double revenue;
-	private String[] menuSelectionOptions;
 	private DecimalFormat decimalFormat = new DecimalFormat("0.00");
 	private Scanner userIn = new Scanner(System.in);
 	private VMLogger vmLogger = new VMLogger();
+	private SalesReport salesReport;
 
 
 
@@ -89,6 +91,8 @@ public class VendingMachineCLI {
 						break;
 					}
 				}
+			} else if (choice.equalsIgnoreCase(MAIN_MENU_OPTION_SALES_REPORT)){
+				salesReport.generateSalesReport();
 			} else if (choice.equalsIgnoreCase(MAIN_MENU_OPTION_EXIT)){
 				break;
 			}
@@ -122,12 +126,7 @@ public class VendingMachineCLI {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-
-		menuSelectionOptions = new String[inventory.size()];
-
-		for(int i = 0; i < menuSelectionOptions.length; i++){
-			menuSelectionOptions[i] = inventory.get(i).display();
-		}
+		salesReport = new SalesReport(inventory);
 	}
 
 	//ADDS MONEY TO VENDING MACHINE BALANCE
@@ -136,16 +135,16 @@ public class VendingMachineCLI {
 		switch(choice){
 
 			case FEED_MONEY_MENU_OPTION_ONE:
-				balance +=1;
-				amount =1;
+				balance += 1;
+				amount = 1;
 				break;
 			case FEED_MONEY_MENU_OPTION_FIVE:
-				balance +=5;
-				amount=5;
+				balance += 5;
+				amount = 5;
 				break;
 			case FEED_MONEY_MENU_OPTION_TEN:
-				balance +=10;
-				amount=10;
+				balance += 10;
+				amount = 10;
 				break;
 
 		}
@@ -170,7 +169,7 @@ public class VendingMachineCLI {
 
 				if((item.getPrice() <= balance) && (item.getQuantity() > 0)) { // if/else for balance AT	//Adjusted if-else statements to ensure item only dispenses if there are items to dispense JO
 					balance -= item.getPrice();
-					revenue += item.getPrice();
+					salesReport.setRevenue(salesReport.getRevenue() + item.getPrice());
 					item.setQuantity(item.getQuantity()-1);  					//Added to make sure that the items are removed from the inventory JO
 					vmLogger.logTransaction(item.getName()+ " "+item.getSelection(),item.getPrice(),balance);
 
