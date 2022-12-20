@@ -122,7 +122,7 @@ public class VendingMachineCLI {
 				}
 			}
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			System.err.println("Error: File Not Found");
 		}
 		salesReport = new SalesReport(inventory);
 	}
