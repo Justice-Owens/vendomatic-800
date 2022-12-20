@@ -61,7 +61,6 @@ public class Item {
         return "";
     }
 
-    public void purchase(){}
 
     public String display(){
         if(quantity > 0) {

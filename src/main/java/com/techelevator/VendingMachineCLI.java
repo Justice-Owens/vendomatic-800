@@ -14,8 +14,6 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-//TODO ADD LOGGING FUNCTIONALITY
-//TODO OPTIONAL SALES REPORT FUNCTION
 
 public class VendingMachineCLI {
 
@@ -230,15 +228,6 @@ public class VendingMachineCLI {
 	public void setBalance(double balance) {
 		this.balance = balance;
 	}
-
-	public double getRevenue() {
-		return revenue;
-	}
-
-	public void setRevenue(double revenue) {
-		this.revenue = revenue;
-	}
-
 
 
 	public static void main(String[] args) {
